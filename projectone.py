@@ -32,6 +32,7 @@ interval_num = config.interval_num
 current_candle = {}
 recvWindow=10000
 
+
 def main():
     print('Starting binancebot...')
     time.sleep(10)
