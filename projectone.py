@@ -17,7 +17,6 @@ from binance_api import *
 # get_open_orders()를 반복할 필요 없음
 # apply_lot_size()를 반복할 필요 없음
 # test 구현
-## 시간대별로 현재 자산가치(BTC)를 파일에 기록하는 로직이 필요 - crontab으로 59분에 balance.py 실행
 # api 동작이 실패하면 다시 시도하는 로직 필요 (모든 함수에 대해서)
 # git clone하면 파이에서 모드변경 없이 동작하는지 확인 (chmod +x *.py)
 

@@ -102,3 +102,6 @@ ENV/
 
 # config file containing secret parameters+
 config.py
+
+# no need to upload data file
+Estimated_BTC_Value.csv
