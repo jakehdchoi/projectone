@@ -19,6 +19,7 @@ from binance_api import *
 # test 구현
 # api 동작이 실패하면 다시 시도하는 로직 필요 (모든 함수에 대해서)
 # git clone하면 파이에서 모드변경 없이 동작하는지 확인 (chmod +x *.py)
+# 이전봉 close 값과 비교하는 로직으로 변경
 
 
 def main():
