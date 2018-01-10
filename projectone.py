@@ -21,14 +21,39 @@ import config
 api_key = config.api_key
 api_secret = config.api_secret
 
-symbol_lists = config.symbol_lists
 period = config.period
 quantity_in_btc = config.quantity_in_btc # the amount you buy in btc for every buy trade, 0.001 is too small and not working
-interval_lists = config.interval_lists
 
 interval = config.interval
 interval_num = config.interval_num
+interval_lists = config.interval_lists
 
+symbol_lists = [
+    'LTCBTC',
+    'SNTBTC',
+    'TRXBTC',
+    'ETHBTC',
+    'ETCBTC',
+    'XRPBTC',
+    'XVGBTC',
+    'XLMBTC',
+    'ADABTC',
+    'BCCBTC',
+    'BNTBTC',
+    'BATBTC',
+    'IOTABTC',
+    'QTUMBTC',
+    'OMGBTC',
+    'NEOBTC',
+    'EOSBTC',
+    'ZECBTC',
+    'DASHBTC',
+    'XMRBTC',
+    'LSKBTC',
+    'STRATBTC',
+    'ICXBTC'
+    ]
+    
 current_candle = {}
 recvWindow=10000
 
