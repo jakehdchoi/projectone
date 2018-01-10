@@ -17,9 +17,9 @@ from binance_api import *
 # get_open_orders()를 반복할 필요 없음
 # apply_lot_size()를 반복할 필요 없음
 # test 구현
-## 시간대별로 현재 자산가치(BTC)를 파일에 기록하는 로직이 필요
+## 시간대별로 현재 자산가치(BTC)를 파일에 기록하는 로직이 필요 - crontab으로 59분에 balance.py 실행
 # api 동작이 실패하면 다시 시도하는 로직 필요 (모든 함수에 대해서)
-# git clone하면 파이에서 모드변경 없이 동작하는지 확인
+# git clone하면 파이에서 모드변경 없이 동작하는지 확인 (chmod +x *.py)
 
 
 def main():
@@ -31,15 +31,9 @@ def main():
     endTime = int(timestamp()) - int(interval_num)
     startTime = calculate_start_time(endTime) # n-time candle 81+개에대한 시작시간
 
-    # symbol이 이미 존재한다면 pass 하는 로직 구현 필요
     for symbol in symbol_lists:
         current_candle[symbol] = []
     # print(current_candle)
-
-    # 현재 balance를 볼 수 있는 로직
-    # for symbol in symbol_lists:
-    #     # 밸런스를 받아오지 못 하는 경우는 어떻게 처리해야 하지.. 재시도 로직?
-    #     print(get_total_balance(symbol))
 
     for symbol in symbol_lists:
         print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
