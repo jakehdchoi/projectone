@@ -1,0 +1,226 @@
+
+import time
+import requests
+import hashlib
+import hmac
+import json
+
+import config
+import symbol_lists
+
+
+api_key = config.api_key
+api_secret = config.api_secret
+
+period = config.period
+quantity_in_btc = config.quantity_in_btc # the amount you buy in btc for every buy trade, 0.001 is too small and not working
+
+interval = config.interval
+interval_num = config.interval_num
+interval_lists = config.interval_lists
+
+symbol_lists = symbol_lists.symbol_lists
+
+current_candle = {}
+recvWindow=10000
+
+
+def timestamp():
+    try:
+        timestamp = simple_request('https://www.binance.com/api/v1/time?')
+        return timestamp['serverTime']
+    except:
+        print('Binance error in public request: timestamp')
+        return 'error'
+
+def get_exchange_info():
+    return simple_request('https://www.binance.com/api/v1/exchangeInfo')
+
+def find_exchange_info(symbol):
+    full_lists = simple_request('https://www.binance.com/api/v1/exchangeInfo')
+    a = full_lists['symbols']
+    for i in a:
+        if i['symbol'] == symbol:
+            return i
+        else:
+            pass
+
+def apply_lot_size(symbol, quantity):
+    step_size = find_exchange_info(symbol)['filters'][1]['stepSize']
+    remainder = quantity % float(step_size)
+    return quantity - remainder
+
+def get_latest_candle(symbol, interval, endTime):
+    try:
+        startTime = endTime - interval_num
+        latest_candle = simple_request('https://www.binance.com/api/v1/klines?symbol=' + symbol + '&interval=' + interval + '&startTime=' + str(startTime) + '&endTime=' + str(endTime))
+        return latest_candle
+    except:
+        print('Binance error in public request: get_latest_candle for ' + symbol)
+        return 'error'
+
+def check_latest_candle_update(symbol, interval, endTime):
+    try:
+        global current_candle, latest_candle
+        latest_candle = get_latest_candle(symbol, interval, endTime)
+        if current_candle[symbol] != latest_candle:
+            if latest_candle is None or len(latest_candle) == 0:
+                return False
+            else:
+                current_candle[symbol] = latest_candle
+                return True
+        else:
+            return False
+    except:
+        print('Binance error in public request: check_latest_candle_update for ' + symbol)
+        return 'error'
+
+def calculate_start_time(endTime):
+    return endTime - (interval_num * (period + 10)) # 여유있게 10개 정도 더 받아온 다음에 자르기
+
+def get_historical_data(symbol, interval, startTime, endTime):
+    try:
+        historical_data = simple_request('https://www.binance.com/api/v1/klines?symbol=' + symbol + '&interval=' + interval + '&startTime=' + str(startTime) + '&endTime=' + str(endTime))
+        return historical_data[-period:]
+    except:
+        print('Binance error in public request: klines for ' + symbol)
+        return 'error'
+        # [
+        #   [
+        #     1499040000000,      // [0] Open time
+        #     "0.01634790",       // [1] Open
+        #     "0.80000000",       // [2] High
+        #     "0.01575800",       // [3] Low
+        #     "0.01577100",       // [4] Close
+        #     "148976.11427815",  // [5] Volume
+        #     1499644799999,      // [6] Close time
+        #     "2434.19055334",    // [7] Quote asset volume 'BTC Volume'
+        #     308,                // [8] Number of trades
+        #     "1756.87402397",    // [9] Taker buy base asset volume
+        #     "28.46694368",      // [10] Taker buy quote asset volume
+        #     "17928899.62484339" // [11] Can be ignored
+        #   ], ... []
+        # ]
+
+def calculate_sma(symbol, interval, startTime, endTime, period):
+    try:
+        historical_data = get_historical_data(symbol, interval, startTime, endTime)
+        total_closing = 0
+
+        for i in range(0, period):
+            total_closing = float(historical_data[i][4]) + total_closing
+        return total_closing / period
+    except:
+        print('Binance error in public request: calculate_sma for ' + symbol)
+        return 'error'
+
+def cut_btc(symbol):
+    return symbol.replace('BTC','')
+
+def get_total_balance(symbol):
+    try:
+        url = 'https://www.binance.com/api/v3/account?'
+        query = ''
+        name = cut_btc(symbol)
+        balance_list = signed_request(url, query)['balances']
+        for value in balance_list:
+            if value['asset'] == name:
+                return value
+            else:
+                pass
+    except:
+        print('Binance error in public request: get_total_balance for ' + symbol)
+        return 'error'
+
+def get_free_balance(symbol):
+    try:
+        url = 'https://www.binance.com/api/v3/account?'
+        query = ''
+        name = cut_btc(symbol)
+        balance_list = signed_request(url, query)['balances']
+        for value in balance_list:
+            if value['asset'] == name:
+                return value['free']
+            else:
+                pass
+    except:
+        print('Binance error in public request: get_free_balance for ' + symbol)
+        return 'error'
+
+def sell_limit(symbol, quantity, price):
+    try:
+        if quantity == 0:
+            return print('nothing to sell')
+        else:
+            quantity = apply_lot_size(symbol, quantity)
+            url = 'https://www.binance.com/api/v3/order?'
+            query = 'symbol=' + symbol + '&side=SELL' + '&type=LIMIT' + '&timeInForce=GTC' + '&quantity=' + format_float(quantity) + '&price=' + format_float(price)
+            return signed_request(url, query, type='post')
+    except:
+        print('Binance error in public request: sell_limit for ' + symbol)
+        return 'error'
+
+def sell_limit_all(symbol, price):
+    try:
+        balance = float(get_free_balance(symbol))
+        return sell_limit(symbol, balance, price)
+    except:
+        print('Binance error in public request: sell_limit_all for ' + symbol)
+        return 'error'
+
+def get_quantity_to_buy(rate):
+    return quantity_in_btc / rate
+
+def buy_limit(symbol, quantity, price):
+    try:
+        quantity = apply_lot_size(symbol, quantity)
+        url = 'https://www.binance.com/api/v3/order?'
+        query = 'symbol=' + symbol + '&side=BUY' + '&type=LIMIT' + '&timeInForce=GTC' + '&quantity=' + format_float(quantity) + '&price=' + format_float(price)
+        return signed_request(url, query, type='post')
+    except:
+        print('Binance error in public request: buy_limit for ' + symbol)
+        return 'error'
+
+def get_open_orders(symbol):
+    try:
+        url = 'https://www.binance.com/api/v3/openOrders?'
+        query = 'symbol=' + symbol
+        return signed_request(url, query)
+    except:
+        print('Binance error in private request: get_open_orders for ' + symbol)
+        return 'error'
+
+def cancel_order(symbol, orderId):
+    try:
+        url = 'https://www.binance.com/api/v3/order?'
+        query = 'symbol=' + symbol + '&orderId=' + str(orderId)
+        return signed_request(url, query, type='delete')
+    except:
+        print('Binance error in private request: cancel_order for ' + symbol)
+        return 'error'
+
+def signed_request(url, query, type='get'):
+    try:
+        query += '&recvWindow=' + str(recvWindow) + '&timestamp=' + str(timestamp())
+        signature = hmac.new((api_secret).encode('utf-8'), query.encode('utf-8'), hashlib.sha256).hexdigest()
+        headers = {'X-MBX-APIKEY': api_key}
+
+        if type == 'get':
+            r = requests.get(url + query + '&signature=' + signature, headers=headers)
+            return r.json()
+        if type == 'post':
+            r = requests.post(url + query + '&signature=' + signature, headers=headers)
+            return r.json()
+        if type =='delete':
+            r = requests.delete(url + query + '&signature=' + signature, headers=headers)
+            return r.json()
+    except:
+        print('Binance error in public request: signed_request')
+        return 'error'
+
+def simple_request(url):
+    r = requests.get(url)
+    return r.json()
+
+def format_float(f):
+    return "%.8f" % f
