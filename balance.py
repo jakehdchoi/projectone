@@ -24,6 +24,11 @@ def main():
         current_candle[symbol] = []
     # print(current_candle)
 
+    # # 현재 balance를 볼 수 있는 로직
+    # for symbol in symbol_lists:
+    #     # 밸런스를 받아오지 못 하는 경우는 어떻게 처리해야 하지.. 재시도 로직?
+    #     print(get_total_balance(symbol))
+
     new_balance_list = []
     try:
         url = 'https://www.binance.com/api/v3/account?'
