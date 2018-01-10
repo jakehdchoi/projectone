@@ -12,7 +12,7 @@ from binance_api import *
 
 
 ### todo
-## 시간대별로 현재 자산가치(BTC)를 파일에 기록하는 로직이 필요 - crontab으로 03분에 balance.py 실행
+# crontab에서 동작하는지 확인
 
 
 def main():
