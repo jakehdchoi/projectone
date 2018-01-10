@@ -34,7 +34,6 @@ def main():
     endTime = int(timestamp()) - int(interval_num)
     startTime = calculate_start_time(endTime) # n-time candle 81+개에대한 시작시간
 
-    # symbol이 이미 존재한다면 pass 하는 로직 구현 필요
     for symbol in symbol_lists:
         current_candle[symbol] = []
     # print(current_candle)
