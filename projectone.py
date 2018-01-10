@@ -15,7 +15,7 @@ import symbol_lists
 # get_open_orders()를 반복할 필요 없음
 # apply_lot_size()를 반복할 필요 없음
 # test 구현
-# 시간대별로 현재 자산가치(BTC)를 파일에 기록하는 로직이 필요
+## 시간대별로 현재 자산가치(BTC)를 파일에 기록하는 로직이 필요
 # api 동작이 실패하면 다시 시도하는 로직 필요 (모든 함수에 대해서)
 
 
@@ -32,7 +32,7 @@ interval_lists = config.interval_lists
 symbol_lists = symbol_lists.symbol_lists
 
 current_candle = {}
-recvWindow=10000
+recvWindow=10000 # 10 sec
 
 
 def main():

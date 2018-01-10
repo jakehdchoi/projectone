@@ -100,5 +100,5 @@ ENV/
 # mypy
 .mypy_cache/
 
-# config file containing secret parameters
+# config file containing secret parameters+
 config.py
