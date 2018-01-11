@@ -24,7 +24,7 @@ from binance_api import *
 
 def main():
     print('Starting binancebot...')
-    time.sleep(10)
+    # time.sleep(10)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
@@ -63,9 +63,11 @@ def main():
         # 이전봉 close 값과 비교하는게 더 좋겠다
         if float(current_candle[symbol][0][1]) < sma and float(current_candle[symbol][0][4]) > sma:
             print(buy_limit(symbol, get_quantity_to_buy(sma), float(current_candle[symbol][0][4])))
+            print(current_candle[symbol][0][1] + ' ' + str(sma) + ' ' + current_candle[symbol][0][4])
             print(symbol + ': buy_limit done!')
         elif float(current_candle[symbol][0][4]) < sma:
             print(sell_limit_all(symbol, float(current_candle[symbol][0][4])))
+            print(str(sma) + ' ' + current_candle[symbol][0][4])
             print(symbol + ': sell_limit done!')
         else:
             pass
