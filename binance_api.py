@@ -28,7 +28,10 @@ recvWindow=10000
 def timestamp():
     try:
         timestamp = simple_request('https://www.binance.com/api/v1/time?')
-        return timestamp['serverTime']
+        if timestamp is None or len(timestamp) == 0:
+            return timestamp()
+        else:
+            return timestamp['serverTime']
     except:
         print('Binance error in public request: timestamp')
         return 'error'

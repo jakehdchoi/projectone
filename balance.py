@@ -24,10 +24,10 @@ def main():
         current_candle[symbol] = []
     # print(current_candle)
 
-    # # 현재 balance를 볼 수 있는 로직
-    # for symbol in symbol_lists:
-    #     # 밸런스를 받아오지 못 하는 경우는 어떻게 처리해야 하지.. 재시도 로직?
-    #     print(get_total_balance(symbol))
+    # 현재 balance를 볼 수 있는 로직
+    for symbol in symbol_lists:
+        # 밸런스를 받아오지 못 하는 경우는 어떻게 처리해야 하지.. 재시도 로직?
+        print(get_total_balance(symbol))
 
     new_balance_list = []
     try:
@@ -38,7 +38,7 @@ def main():
             if float(value['free']) > 0 or float(value['locked']) > 0:
                 new_balance_list.append(value)
             else:
-                pass
+                continue
     except:
         print('new balance list error')
 
@@ -63,10 +63,10 @@ def main():
                 if item['symbol'] == symbol:
                     Estimated_BTC_Value += (float(value['locked']) + float(value['free'])) * float(item['price'])
                 else:
-                    pass
+                    continue
 
 
-    # print(Estimated_BTC_Value)
+    print(Estimated_BTC_Value)
 
 
     try:

@@ -20,6 +20,7 @@ from binance_api import *
 # 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
 ## api 동작이 실패하면 다시 시도하는 로직 필요 (모든 함수에 대해서)
 ## 이전봉 close 값과 비교하는 로직으로 변경
+# 코드 최적화 작업, api call을 최대한 적게 구현
 
 
 def main():
@@ -41,7 +42,7 @@ def main():
         open_orders = get_open_orders(symbol)
 
         if open_orders is None or len(open_orders) == 0:
-            pass
+            continue
         else:
             cancel_order(symbol, open_orders[0]['orderId'])
             if open_orders[0]['side'] == 'BUY':

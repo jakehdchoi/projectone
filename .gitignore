@@ -104,4 +104,4 @@ ENV/
 config.py
 
 # no need to upload data file
-Estimated_BTC_Value.csv
+*.csv
