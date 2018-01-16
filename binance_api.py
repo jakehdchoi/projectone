@@ -210,13 +210,22 @@ def signed_request(url, query, type='get'):
 
         if type == 'get':
             r = requests.get(url + query + '&signature=' + signature, headers=headers)
-            return r.json()
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return signed_request(url, query_copy)
         if type == 'post':
             r = requests.post(url + query + '&signature=' + signature, headers=headers)
-            return r.json()
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return signed_request(url, query_copy)
         if type =='delete':
             r = requests.delete(url + query + '&signature=' + signature, headers=headers)
-            return r.json()
+            if r.status_code == 200:
+                return r.json()
+            else:
+                return signed_request(url, query_copy)
     except:
         print('Binance error in public request: signed_request')
         return 'error'
