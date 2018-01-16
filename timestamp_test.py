@@ -17,9 +17,9 @@ def main():
     while True:
         time.sleep(1)
         # timestamp = simple_request('https://www.binance.com/api/v1/time?')
-        # print(timestamp)
+        print(timestamp())
 
-        print(get_total_balance('BNBBTC'))
+        # print(get_total_balance('BNBBTC'))
 
         # try:
         #     f = open('time.csv','a')
@@ -79,7 +79,10 @@ def signed_request(url, query, type='get'):
 def timestamp():
     try:
         timestamp = simple_request('https://www.binance.com/api/v1/time?')
-        return timestamp['serverTime']
+        if timestamp is None or len(timestamp) == 0:
+            return timestamp()
+        else:
+            return timestamp['serverTime']
     except:
         print('Binance error in public request: timestamp')
         return 'error'

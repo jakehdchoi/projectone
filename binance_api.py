@@ -20,8 +20,10 @@ interval_num = config.interval_num
 interval_lists = config.interval_lists
 
 symbol_lists = symbol_lists.symbol_lists
+percentage_on_rate = config.percentage_on_rate
 
 current_candle = {}
+previous_candle = {}
 recvWindow=10000
 
 
@@ -232,6 +234,7 @@ def signed_request(url, query, type='get'):
 
 def signed_request_again(url, query, type='get'):
     try:
+        time.sleep(0.5)
         signature = hmac.new((api_secret).encode('utf-8'), query.encode('utf-8'), hashlib.sha256).hexdigest()
         headers = {'X-MBX-APIKEY': api_key}
 
@@ -249,6 +252,14 @@ def signed_request_again(url, query, type='get'):
         return 'error'
 
 def simple_request(url):
+    r = requests.get(url)
+    if r.status_code == 200:
+        return r.json()
+    else:
+        return simple_request_again(url)
+
+def simple_request_again(url):
+    time.sleep(0.5)
     r = requests.get(url)
     return r.json()
 

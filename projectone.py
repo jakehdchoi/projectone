@@ -34,44 +34,52 @@ def main():
 
     for symbol in symbol_lists:
         current_candle[symbol] = []
+        previous_candle[symbol] = []
     # print(current_candle)
 
+    historical_candle = {}
     for symbol in symbol_lists:
-        print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
-        check_latest_candle_update(symbol, interval, endTime)
-        open_orders = get_open_orders(symbol)
+        historical_candle[symbol] = get_historical_data(symbol, interval, startTime, endTime)
 
-        if open_orders is None or len(open_orders) == 0:
-            continue
-        else:
-            cancel_order(symbol, open_orders[0]['orderId'])
-            if open_orders[0]['side'] == 'BUY':
-                amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
-                rate = float(current_candle[symbol][0][4]) * 1.1
-                print(buy_limit(symbol, amount, rate))
-                print(symbol + ': buy_limit x1.1 done!')
-            elif open_orders[0]['side'] == 'SELL':
-                amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
-                rate = float(current_candle[symbol][0][4]) * 0.9
-                print(sell_limit(symbol, amount, rate))
-                print(symbol + ': sell_limit x0.9 done!')
-            else:
-                pass
+    print(historical_candle['ICXBTC'])
+    print(historical_candle['ICXBTC'][-2])
 
-        # 봇을 재부팅하면 당연히 TRUE가 되는데, 그 때 하필 30분봉이 SMA를 넘어서는 코인이 있다면 거래가 중복될 것이다
-        # 일단은 봇을 29분에 끄고 31분에 켜는 것을 원칙으로 한다
-        sma = calculate_sma(symbol, interval, startTime, endTime, period)
-        # 이전봉 close 값과 비교하는게 더 좋겠다
-        if float(current_candle[symbol][0][1]) < sma and float(current_candle[symbol][0][4]) > sma:
-            print(buy_limit(symbol, get_quantity_to_buy(sma), float(current_candle[symbol][0][4])))
-            print(current_candle[symbol][0][1] + ' ' + str(sma) + ' ' + current_candle[symbol][0][4])
-            print(symbol + ': buy_limit done!')
-        elif float(current_candle[symbol][0][4]) < sma:
-            print(sell_limit_all(symbol, float(current_candle[symbol][0][4])))
-            print(str(sma) + ' ' + current_candle[symbol][0][4])
-            print(symbol + ': sell_limit done!')
-        else:
-            pass
+    # for symbol in symbol_lists:
+    #     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    #     check_latest_candle_update(symbol, interval, endTime)
+    #     open_orders = get_open_orders(symbol)
+    #
+    #     if open_orders is None or len(open_orders) == 0:
+    #         continue
+    #     else:
+    #         cancel_order(symbol, open_orders[0]['orderId'])
+    #         if open_orders[0]['side'] == 'BUY':
+    #             amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
+    #             rate = float(current_candle[symbol][0][4]) * (1 + percentage_on_rate)
+    #             print(buy_limit(symbol, amount, rate))
+    #             print(symbol + ': buy_limit +2p done!')
+    #         elif open_orders[0]['side'] == 'SELL':
+    #             amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
+    #             rate = float(current_candle[symbol][0][4]) * (1 - percentage_on_rate)
+    #             print(sell_limit(symbol, amount, rate))
+    #             print(symbol + ': sell_limit -2p done!')
+    #         else:
+    #             pass
+    #
+    #     # 봇을 재부팅하면 당연히 TRUE가 되는데, 그 때 하필 30분봉이 SMA를 넘어서는 코인이 있다면 거래가 중복될 것이다
+    #     # 일단은 봇을 29분에 끄고 31분에 켜는 것을 원칙으로 한다
+    #     sma = calculate_sma(symbol, interval, startTime, endTime, period)
+    #     # 이전봉 close 값과 비교하는게 더 좋겠다
+    #     if float(current_candle[symbol][0][1]) < sma and float(current_candle[symbol][0][4]) > sma:
+    #         print(buy_limit(symbol, get_quantity_to_buy(sma), float(current_candle[symbol][0][4]) * (1 + percentage_on_rate)))
+    #         print(current_candle[symbol][0][1] + ' ' + str(sma) + ' ' + current_candle[symbol][0][4])
+    #         print(symbol + ': buy_limit done!')
+    #     elif float(current_candle[symbol][0][4]) < sma:
+    #         print(sell_limit_all(symbol, float(current_candle[symbol][0][4]) * (1 - percentage_on_rate)))
+    #         print(str(sma) + ' ' + current_candle[symbol][0][4])
+    #         print(symbol + ': sell_limit done!')
+    #     else:
+    #         pass
 
 
 
