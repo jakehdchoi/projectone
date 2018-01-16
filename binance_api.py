@@ -213,19 +213,37 @@ def signed_request(url, query, type='get'):
             if r.status_code == 200:
                 return r.json()
             else:
-                return signed_request(url, query_copy)
+                return signed_request_again(url, query)
         if type == 'post':
             r = requests.post(url + query + '&signature=' + signature, headers=headers)
             if r.status_code == 200:
                 return r.json()
             else:
-                return signed_request(url, query_copy)
+                return signed_request_again(url, query, type='post')
         if type =='delete':
             r = requests.delete(url + query + '&signature=' + signature, headers=headers)
             if r.status_code == 200:
                 return r.json()
             else:
-                return signed_request(url, query_copy)
+                return signed_request_again(url, query, type='delete')
+    except:
+        print('Binance error in public request: signed_request')
+        return 'error'
+
+def signed_request_again(url, query, type='get'):
+    try:
+        signature = hmac.new((api_secret).encode('utf-8'), query.encode('utf-8'), hashlib.sha256).hexdigest()
+        headers = {'X-MBX-APIKEY': api_key}
+
+        if type == 'get':
+            r = requests.get(url + query + '&signature=' + signature, headers=headers)
+            return r.json()
+        if type == 'post':
+            r = requests.post(url + query + '&signature=' + signature, headers=headers)
+            return r.json()
+        if type =='delete':
+            r = requests.delete(url + query + '&signature=' + signature, headers=headers)
+            return r.json()
     except:
         print('Binance error in public request: signed_request')
         return 'error'
