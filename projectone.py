@@ -43,6 +43,7 @@ def main():
 
     print(historical_candle['ICXBTC'])
     print(historical_candle['ICXBTC'][-2])
+    print(len(historical_candle['ICXBTC']))
 
     # for symbol in symbol_lists:
     #     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
