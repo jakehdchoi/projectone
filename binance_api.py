@@ -15,12 +15,11 @@ api_secret = config.api_secret
 period = config.period
 quantity_in_btc = config.quantity_in_btc # the amount you buy in btc for every buy trade, 0.001 is too small and not working
 
-interval = config.interval
-interval_num = config.interval_num
-interval_lists = config.interval_lists
+interval = config.interval_symbol[0]
+interval_num = config.interval_symbol[1] # in millisec
 
 symbol_lists = symbol_lists.symbol_lists
-percentage_on_rate = config.percentage_on_rate
+percent_on_price = config.percent_on_price
 
 current_candle = {}
 recvWindow=10000

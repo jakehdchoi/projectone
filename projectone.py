@@ -59,13 +59,13 @@ def main():
                     # current_candle = historical_candle[symbol][-1]
                     # previous_candle = historical_candle[symbol][-2]
                     if float(historical_candle[symbol][-2][4]) < sma and float(historical_candle[symbol][-1][4]) > sma:
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percentage_on_rate), tickSize)
+                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                         print(buy_limit(symbol, get_quantity_to_buy(sma), price))
                         print(historical_candle[symbol][-2][4] + ' ' + str(sma) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': buy_limit done!')
                     elif float(historical_candle[symbol][-1][4]) < sma:
                         print('Price to sell for ' + symbol)
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percentage_on_rate), tickSize)
+                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
                         print(sell_limit_all(symbol, price))
                         print(str(sma) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': sell_limit done!')
@@ -76,13 +76,13 @@ def main():
                     cancel_order(symbol, open_orders[0]['orderId'])
                     if open_orders[0]['side'] == 'BUY':
                         amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
-                        price = float(historical_candle[symbol][-1][4]) * (1 + percentage_on_rate)
+                        price = float(historical_candle[symbol][-1][4]) * (1 + percent_on_price)
                         price = apply_tick_size(price, tickSize)
                         print(buy_limit(symbol, amount, price))
                         print(symbol + ': buy_limit +2p done!')
                     elif open_orders[0]['side'] == 'SELL':
                         amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
-                        price = float(historical_candle[symbol][-1][4]) * (1 - percentage_on_rate)
+                        price = float(historical_candle[symbol][-1][4]) * (1 - percent_on_price)
                         price = apply_tick_size(price, tickSize)
                         print(sell_limit(symbol, amount, price))
                         print(symbol + ': sell_limit -2p done!')
