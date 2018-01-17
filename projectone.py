@@ -10,8 +10,6 @@ import symbol_lists
 
 from binance_api import *
 
-### note
-# crontab version
 
 ### todo
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
@@ -28,7 +26,7 @@ def main():
     global endTime, startTime
     endTime = int(timestamp()) - int(interval_num)
     # endTime = int(1516171821000)  - int(interval_num)
-    startTime = calculate_start_time(endTime) # n-time candle 81+개에대한 시작시간
+    startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     exchange_info = get_exchange_info()['symbols']
 
