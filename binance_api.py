@@ -48,9 +48,8 @@ def find_exchange_info(symbol):
         else:
             pass
 
-def apply_lot_size(symbol, quantity):
-    step_size = find_exchange_info(symbol)['filters'][1]['stepSize']
-    remainder = quantity % float(step_size)
+def apply_lot_size(quantity, stepSize):
+    remainder = quantity % float(stepSize)
     return quantity - remainder
 
 def apply_tick_size(price, tickSize):
@@ -159,7 +158,6 @@ def sell_limit(symbol, quantity, price):
         if quantity == 0:
             return print('nothing to sell')
         else:
-            quantity = apply_lot_size(symbol, quantity)
             url = 'https://www.binance.com/api/v3/order?'
             query = 'symbol=' + symbol + '&side=SELL' + '&type=LIMIT' + '&timeInForce=GTC' + '&quantity=' + format_float(quantity) + '&price=' + format_float(price)
             return signed_request(url, query, type='post')
@@ -167,9 +165,9 @@ def sell_limit(symbol, quantity, price):
         print('Binance error in public request: sell_limit for ' + symbol)
         return 'error'
 
-def sell_limit_all(symbol, price):
+def sell_limit_all(symbol, price, stepSize):
     try:
-        balance = float(get_free_balance(symbol))
+        balance = apply_lot_size(float(get_free_balance(symbol)), stepSize)
         return sell_limit(symbol, balance, price)
     except:
         print('Binance error in public request: sell_limit_all for ' + symbol)
@@ -180,7 +178,6 @@ def get_quantity_to_buy(price):
 
 def buy_limit(symbol, quantity, price):
     try:
-        quantity = apply_lot_size(symbol, quantity)
         url = 'https://www.binance.com/api/v3/order?'
         query = 'symbol=' + symbol + '&side=BUY' + '&type=LIMIT' + '&timeInForce=GTC' + '&quantity=' + format_float(quantity) + '&price=' + format_float(price)
         return signed_request(url, query, type='post')

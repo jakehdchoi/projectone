@@ -15,7 +15,6 @@ from binance_api import *
 
 ### todo
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
-# apply_lot_size()를 반복할 필요 없음
 # test 구현
 # 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
 # 코드 최적화 작업, api call을 최대한 적게 구현
@@ -60,13 +59,14 @@ def main():
                     # previous_candle = historical_candle[symbol][-2]
                     if float(historical_candle[symbol][-2][4]) < sma and float(historical_candle[symbol][-1][4]) > sma:
                         price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-                        print(buy_limit(symbol, get_quantity_to_buy(sma), price))
+                        quantity = apply_lot_size(get_quantity_to_buy(sma), stepSize)
+                        print(buy_limit(symbol, quantity, price))
                         print(historical_candle[symbol][-2][4] + ' ' + str(sma) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': buy_limit done!')
                     elif float(historical_candle[symbol][-1][4]) < sma:
                         print('Price to sell for ' + symbol)
                         price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
-                        print(sell_limit_all(symbol, price))
+                        print(sell_limit_all(symbol, price, stepSize))
                         print(str(sma) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': sell_limit done!')
                     else:
@@ -76,12 +76,14 @@ def main():
                     cancel_order(symbol, open_orders[0]['orderId'])
                     if open_orders[0]['side'] == 'BUY':
                         amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
+                        amount = apply_lot_size(amount, stepSize)
                         price = float(historical_candle[symbol][-1][4]) * (1 + percent_on_price)
                         price = apply_tick_size(price, tickSize)
                         print(buy_limit(symbol, amount, price))
                         print(symbol + ': buy_limit +2p done!')
                     elif open_orders[0]['side'] == 'SELL':
                         amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
+                        amount = apply_lot_size(amount, stepSize)
                         price = float(historical_candle[symbol][-1][4]) * (1 - percent_on_price)
                         price = apply_tick_size(price, tickSize)
                         print(sell_limit(symbol, amount, price))
