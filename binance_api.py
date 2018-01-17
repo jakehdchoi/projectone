@@ -23,7 +23,6 @@ symbol_lists = symbol_lists.symbol_lists
 percentage_on_rate = config.percentage_on_rate
 
 current_candle = {}
-previous_candle = {}
 recvWindow=10000
 
 
@@ -54,6 +53,10 @@ def apply_lot_size(symbol, quantity):
     step_size = find_exchange_info(symbol)['filters'][1]['stepSize']
     remainder = quantity % float(step_size)
     return quantity - remainder
+
+def apply_tick_size(price, tickSize):
+    remainder = price % float(tickSize)
+    return price - remainder
 
 def get_latest_candle(symbol, interval, endTime):
     try:
@@ -173,8 +176,8 @@ def sell_limit_all(symbol, price):
         print('Binance error in public request: sell_limit_all for ' + symbol)
         return 'error'
 
-def get_quantity_to_buy(rate):
-    return quantity_in_btc / rate
+def get_quantity_to_buy(price):
+    return quantity_in_btc / price
 
 def buy_limit(symbol, quantity, price):
     try:
