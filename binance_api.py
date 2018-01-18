@@ -24,6 +24,8 @@ percent_on_price = config.percent_on_price
 current_candle = {}
 recvWindow=10000
 
+k = 2 # bollinger band constant
+
 
 def timestamp():
     try:
