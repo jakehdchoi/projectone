@@ -79,7 +79,7 @@ def main():
                         print('Price to sell for ' + symbol)
                         price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
                         print(sell_limit_all(symbol, price, stepSize))
-                        print(str(middle_band) + ' ' + historical_candle[symbol][-1][4])
+                        print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': sell_limit done!')
                     # 캔들이 middle_band 아래 있으면 SELL
                     elif float(historical_candle[symbol][-1][4]) < middle_band:
