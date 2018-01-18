@@ -23,7 +23,7 @@ from binance_api import *
 
 def main():
     print('Starting binancebot...')
-    # time.sleep(10)
+    time.sleep(10)
     print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
@@ -39,79 +39,79 @@ def main():
 
     for symbol in symbol_lists:
         print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
-        print(symbol)
-        print(historical_candle[symbol])
 
-        # create list of closed value
-        closed_value = []
+        # create list of close value
+        close_value = []
         for i in historical_candle[symbol]:
-            closed_value.append(float(i[4]))
-        print(closed_value)
-        print(len(closed_value))
+            close_value.append(float(i[4]))
 
-        std_value = numpy.std(closed_value)
-        middle_band = numpy.average(closed_value)
+        # bollinger band
+        std_value = numpy.std(close_value)
+        middle_band = numpy.average(close_value)
         upper_band = middle_band + (k * std_value)
         lower_band = middle_band - (k * std_value)
-        print(upper_band)
-        print(lower_band)
+        # print(upper_band)
+        # print(lower_band)
 
+        for symbol_info in exchange_info:
+            if symbol_info['symbol'] == symbol:
+                tickSize = symbol_info['filters'][0]['tickSize'] # price_filter, minPrice
+                stepSize = symbol_info['filters'][1]['stepSize'] # lot_size, minQty
 
+                open_orders = get_open_orders(symbol)
 
-        break
+                if open_orders is None or len(open_orders) == 0:
+                    # 봇을 재부팅 할 때, 하필 30분봉이 middle_band를 넘어서는 코인이 있다면 거래가 중복될 것이다
+                    # 일단은 봇을 29분에 끄고 31분에 켜는 것을 원칙으로 한다
 
+                    # current_candle = historical_candle[symbol][-1]
+                    # previous_candle = historical_candle[symbol][-2]
 
+                    # 캔들이 middle_band를 올라갈 때 BUY
+                    if float(historical_candle[symbol][-2][4]) < middle_band and float(historical_candle[symbol][-1][4]) > middle_band:
+                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
+                        quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
+                        print(buy_limit(symbol, quantity, price))
+                        print(historical_candle[symbol][-2][4] + ' ' + str(middle_band) + ' ' + historical_candle[symbol][-1][4])
+                        print(symbol + ': buy_limit done!')
+                    # 캔들이 upper_band를 내려올 때 SELL
+                    elif float(historical_candle[symbol][-2][4]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
+                        print('Price to sell for ' + symbol)
+                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
+                        print(sell_limit_all(symbol, price, stepSize))
+                        print(str(middle_band) + ' ' + historical_candle[symbol][-1][4])
+                        print(symbol + ': sell_limit done!')
+                    # 캔들이 middle_band 아래 있으면 SELL
+                    elif float(historical_candle[symbol][-1][4]) < middle_band:
+                        print('Price to sell for ' + symbol)
+                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
+                        print(sell_limit_all(symbol, price, stepSize))
+                        print(str(middle_band) + ' ' + historical_candle[symbol][-1][4])
+                        print(symbol + ': sell_limit done!')
+                    else:
+                        pass
 
+                else:
+                    cancel_order(symbol, open_orders[0]['orderId'])
+                    if open_orders[0]['side'] == 'BUY':
+                        amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
+                        amount = apply_lot_size(amount, stepSize)
+                        price = float(historical_candle[symbol][-1][4]) * (1 + percent_on_price)
+                        price = apply_tick_size(price, tickSize)
+                        print(buy_limit(symbol, amount, price))
+                        print(symbol + ': buy_limit +2p done!')
+                    elif open_orders[0]['side'] == 'SELL':
+                        amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
+                        amount = apply_lot_size(amount, stepSize)
+                        price = float(historical_candle[symbol][-1][4]) * (1 - percent_on_price)
+                        price = apply_tick_size(price, tickSize)
+                        print(sell_limit(symbol, amount, price))
+                        print(symbol + ': sell_limit -2p done!')
+                    else:
+                        pass
 
-        # for symbol_info in exchange_info:
-        #     if symbol_info['symbol'] == symbol:
-        #         tickSize = symbol_info['filters'][0]['tickSize'] # price_filter, minPrice
-        #         stepSize = symbol_info['filters'][1]['stepSize'] # lot_size, minQty
-        #
-        #         open_orders = get_open_orders(symbol)
-        #
-        #         if open_orders is None or len(open_orders) == 0:
-        #             # 봇을 재부팅하면 당연히 TRUE가 되는데, 그 때 하필 30분봉이 SMA를 넘어서는 코인이 있다면 거래가 중복될 것이다
-        #             # 일단은 봇을 29분에 끄고 31분에 켜는 것을 원칙으로 한다
-        #             sma = calculate_sma(symbol, interval, startTime, endTime, period)
-        #             # current_candle = historical_candle[symbol][-1]
-        #             # previous_candle = historical_candle[symbol][-2]
-        #             if float(historical_candle[symbol][-2][4]) < sma and float(historical_candle[symbol][-1][4]) > sma:
-        #                 price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-        #                 quantity = apply_lot_size(get_quantity_to_buy(sma), stepSize)
-        #                 print(buy_limit(symbol, quantity, price))
-        #                 print(historical_candle[symbol][-2][4] + ' ' + str(sma) + ' ' + historical_candle[symbol][-1][4])
-        #                 print(symbol + ': buy_limit done!')
-        #             elif float(historical_candle[symbol][-1][4]) < sma:
-        #                 print('Price to sell for ' + symbol)
-        #                 price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
-        #                 print(sell_limit_all(symbol, price, stepSize))
-        #                 print(str(sma) + ' ' + historical_candle[symbol][-1][4])
-        #                 print(symbol + ': sell_limit done!')
-        #             else:
-        #                 pass
-        #
-        #         else:
-        #             cancel_order(symbol, open_orders[0]['orderId'])
-        #             if open_orders[0]['side'] == 'BUY':
-        #                 amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
-        #                 amount = apply_lot_size(amount, stepSize)
-        #                 price = float(historical_candle[symbol][-1][4]) * (1 + percent_on_price)
-        #                 price = apply_tick_size(price, tickSize)
-        #                 print(buy_limit(symbol, amount, price))
-        #                 print(symbol + ': buy_limit +2p done!')
-        #             elif open_orders[0]['side'] == 'SELL':
-        #                 amount = float(open_orders[0]['origQty']) - float(open_orders[0]['executedQty'])
-        #                 amount = apply_lot_size(amount, stepSize)
-        #                 price = float(historical_candle[symbol][-1][4]) * (1 - percent_on_price)
-        #                 price = apply_tick_size(price, tickSize)
-        #                 print(sell_limit(symbol, amount, price))
-        #                 print(symbol + ': sell_limit -2p done!')
-        #             else:
-        #                 pass
-        #
-        #     else:
-        #         pass
+            else:
+                pass
 
 
 
