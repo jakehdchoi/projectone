@@ -18,6 +18,7 @@ from binance_api import *
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
 # order를 float으로 연산하는데, 소수점이 잘 맞는지 확인하기, sell_limit_all 후에 남는 잔고 없게 수정
+# 자동으로 BNB 구매하는 로직 추가
 
 
 def main():
@@ -27,7 +28,7 @@ def main():
 
     global endTime, startTime
     endTime = int(timestamp()) - int(interval_num)
-    # endTime = int(1516171821000)  - int(interval_num)
+    # endTime = int(1516369447000)  - int(interval_num) # xlm을 왜 안 사는거야
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     exchange_info = get_exchange_info()['symbols']
@@ -39,11 +40,12 @@ def main():
     # create balance_list
     new_balance_list = []
     balance_list = signed_request('https://www.binance.com/api/v3/account?', '')['balances']
-    for value in balance_list:
-        if float(value['free']) > 0 or float(value['locked']) > 0:
-            new_balance_list.append(value)
-        else:
-            continue
+    for symbol in symbol_lists:
+        for value in balance_list:
+            if value['asset'] == cut_btc(symbol):
+                new_balance_list.append(value)
+            else:
+                pass
 
 
     # main
@@ -71,6 +73,8 @@ def main():
         lower_band = middle_band - (k * std_value)
         # print(upper_band)
         # print(lower_band)
+
+        print(symbol + ' ' + historical_candle[symbol][-2][4] + ' ' + str(middle_band) + ' ' + historical_candle[symbol][-1][4])
 
         for symbol_info in exchange_info:
             if symbol_info['symbol'] == symbol:
