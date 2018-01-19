@@ -24,7 +24,7 @@ from binance_api import *
 def main():
     print('Starting binancebot...')
     time.sleep(10)
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
     endTime = int(timestamp()) - int(interval_num)
@@ -113,6 +113,7 @@ def main():
             else:
                 pass
 
+    print(time.strftime('end: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
 

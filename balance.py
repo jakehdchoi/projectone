@@ -18,7 +18,7 @@ from binance_api import *
 def main():
     print('Starting binancebot...')
     # time.sleep(10)
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
     for symbol in symbol_lists:
         current_candle[symbol] = []
@@ -78,6 +78,7 @@ def main():
     finally:
         f.close()
 
+    print(time.strftime('end: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
 
