@@ -23,7 +23,7 @@ from binance_api import *
 
 def main():
     print('Starting binancebot...')
-    time.sleep(10)
+    # time.sleep(10)
     print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
@@ -37,6 +37,17 @@ def main():
     for symbol in symbol_lists:
         historical_candle[symbol] = get_historical_data(symbol, interval, startTime, endTime)
 
+    # create balance_list
+    new_balance_list = []
+    balance_list = signed_request('https://www.binance.com/api/v3/account?', '')['balances']
+    for value in balance_list:
+        if float(value['free']) > 0 or float(value['locked']) > 0:
+            new_balance_list.append(value)
+        else:
+            continue
+
+
+    # main
     for symbol in symbol_lists:
         print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
@@ -78,19 +89,37 @@ def main():
 
                     # middle_band 상향 돌파 BUY
                     if float(historical_candle[symbol][-2][4]) < middle_band and float(historical_candle[symbol][-1][4]) > middle_band:
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-                        quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
-                        print(buy_limit(symbol, quantity, price))
-                        print(historical_candle[symbol][-2][4] + ' ' + str(middle_band) + ' ' + historical_candle[symbol][-1][4])
-                        print(symbol + ': buy_limit done!')
-                        continue
+                        name = cut_btc(symbol)
+                        for value in new_balance_list:
+                            if value['asset'] == name:
+                                current_balance = float(value['free']) + float(value['locked'])
+                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5
+                                    price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
+                                    quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
+                                    print(buy_limit(symbol, quantity, price))
+                                    print(historical_candle[symbol][-2][4] + ' ' + str(middle_band) + ' ' + historical_candle[symbol][-1][4])
+                                    print(symbol + ': buy_limit done!')
+                                    continue
+                                else:
+                                    pass
+                            else:
+                                pass
                     # 신고 거래량 & 이전 캔들 종가 < 현재 종가 & middle_band과 lower_band 사이에 있으면 BUY
                     elif max_volume == float(historical_candle[symbol][-1][7]) and float(historical_candle[symbol][-2][4]) < float(historical_candle[symbol][-1][4]) and float(historical_candle[symbol][-1][4]) < middle_band and float(historical_candle[symbol][-1][4]) > lower_band:
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-                        quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
-                        print(buy_limit(symbol, quantity, price))
-                        print(symbol + ': buy_limit done!')
-                        continue
+                        name = cut_btc(symbol)
+                        for value in new_balance_list:
+                            if value['asset'] == name:
+                                current_balance = float(value['free']) + float(value['locked'])
+                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5
+                                    price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
+                                    quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
+                                    print(buy_limit(symbol, quantity, price))
+                                    print(symbol + ': buy_limit done!')
+                                    continue
+                                else:
+                                    pass
+                            else:
+                                pass
                     # upper_band 하향 돌파 SELL
                     elif float(historical_candle[symbol][-2][4]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
                         print('Price to sell for ' + symbol)
