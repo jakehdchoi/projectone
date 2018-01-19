@@ -17,8 +17,7 @@ from binance_api import *
 # 코드 최적화 작업, api call을 최대한 적게 구현
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
-# order를 float으로 연산하는데, 소수점이 잘 맞는지 확인하기
-## 중복 구매를 막을 수 있는 로직 구현
+# order를 float으로 연산하는데, 소수점이 잘 맞는지 확인하기, sell_limit_all 후에 남는 잔고 없게 수정
 
 
 def main():
@@ -93,7 +92,7 @@ def main():
                         for value in new_balance_list:
                             if value['asset'] == name:
                                 current_balance = float(value['free']) + float(value['locked'])
-                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5
+                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5:
                                     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                                     quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
                                     print(buy_limit(symbol, quantity, price))
@@ -110,7 +109,7 @@ def main():
                         for value in new_balance_list:
                             if value['asset'] == name:
                                 current_balance = float(value['free']) + float(value['locked'])
-                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5
+                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5:
                                     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                                     quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
                                     print(buy_limit(symbol, quantity, price))
