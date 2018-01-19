@@ -23,7 +23,7 @@ from binance_api import *
 
 def main():
     print('Starting binancebot...')
-    # time.sleep(10)
+    time.sleep(10)
     print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
