@@ -103,8 +103,8 @@ def main():
                                     pass
                             else:
                                 pass
-                    # 신고 거래량 & 이전 캔들 종가 < 현재 종가 & middle_band과 lower_band 사이에 있으면 BUY
-                    elif max_volume == float(historical_candle[symbol][-1][7]) and float(historical_candle[symbol][-2][4]) < float(historical_candle[symbol][-1][4]) and float(historical_candle[symbol][-1][4]) < middle_band and float(historical_candle[symbol][-1][4]) > lower_band:
+                    # 신고 거래량 & 양봉 & middle_band과 lower_band 사이에 있으면 BUY
+                elif max_volume == float(historical_candle[symbol][-1][7]) and float(historical_candle[symbol][-1][1]) < float(historical_candle[symbol][-1][4]) and float(historical_candle[symbol][-1][4]) < middle_band and float(historical_candle[symbol][-1][4]) > lower_band:
                         name = cut_btc(symbol)
                         for value in new_balance_list:
                             if value['asset'] == name:
