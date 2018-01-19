@@ -18,6 +18,7 @@ from binance_api import *
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
 # order를 float으로 연산하는데, 소수점이 잘 맞는지 확인하기
+## 중복 구매를 막을 수 있는 로직 구현
 
 
 def main():
