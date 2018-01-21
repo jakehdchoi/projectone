@@ -17,7 +17,7 @@ from binance_api import *
 # 코드 최적화 작업, api call을 최대한 적게 구현
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
-# order를 float으로 연산하는데, 소수점이 잘 맞는지 확인하기, sell_limit_all 후에 남는 잔고 없게 수정
+# sell_limit_all -> sell_limit으로 변경한 뒤, 현재 balance를 입력하는 로직으로 변경
 # 자동으로 BNB 구매하는 로직 추가
 
 
@@ -46,6 +46,51 @@ def main():
                 new_balance_list.append(value)
             else:
                 pass
+
+    # BNB close price
+    bnb_close_price = float(get_latest_candle('BNBBTC', interval, endTime)[0][4])
+
+    # BNB balance
+    bnb_balance = float(get_free_balance('BNB'))
+
+    # BNB auto-buy logic
+    for symbol_info in exchange_info:
+        if symbol_info['symbol'] == 'BNBBTC':
+            print(symbol_info)
+            bnb_tickSize = float(symbol_info['filters'][0]['tickSize'])
+            print(bnb_tickSize)
+            bnb_stepSize = float(symbol_info['filters'][1]['stepSize'])
+            print(bnb_stepSize)
+            bnb_minNotional = float(symbol_info['filters'][2]['minNotional'])
+            print(bnb_minNotional)
+
+            if bnb_balance * bnb_close_price < quantity_in_btc * len(symbol_lists) * 0.001:
+                bnb_quantity = quantity_in_btc * len(symbol_lists) * 0.0005 / bnb_close_price
+                bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
+                print(bnb_quantity)
+                bnb_price = bnb_close_price * 2
+                print(bnb_price)
+                # bnb_price = apply_tick_size(bnb_price, bnb_tickSize)
+                # print(bnb_price)
+                if bnb_price * bnb_quantity > bnb_minNotional:
+                    print('[1]')
+                    print(buy_limit('BNBBTC', bnb_quantity, bnb_price))
+                # elif bnb_price * bnb_quantity < bnb_minNotional and bnb_price > bnb_minNotional:
+                #     print('[2]')
+                #     print(buy_limit('BNBBTC', quantity_in_btc / quantity_in_btc, bnb_price))
+                else:
+                    bnb_quantity = bnb_minNotional / bnb_price + 1
+                    bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
+                    print(bnb_quantity)
+                    print('[3]')
+                    print(buy_limit('BNBBTC', bnb_quantity, bnb_price))
+            else:
+                print('No need to buy more BNB, yet')
+                pass
+
+        else:
+            pass
+
 
 
     # main
