@@ -125,6 +125,9 @@ def calculate_sma(symbol, interval, startTime, endTime, period):
 def cut_btc(symbol):
     return symbol.replace('BTC','')
 
+def cut_usdt(symbol):
+    return symbol.replace('USDT','')
+
 def get_total_balance(symbol):
     try:
         url = 'https://www.binance.com/api/v3/account?'

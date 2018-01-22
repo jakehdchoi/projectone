@@ -1,22 +1,4 @@
 symbol_lists = [
-    'ADABTC',
-    'BCCBTC',
-    'BTGBTC',
-    'DASHBTC',
-    'EOSBTC',
-    'ETCBTC',
-    'ETHBTC',
-    'ICXBTC',
-    'IOTABTC',
-    'LSKBTC',
-    'LTCBTC',
-    'NEOBTC',
-    'OMGBTC',
-    'QTUMBTC',
-    'STRATBTC',
-    'TRXBTC',
-    'XLMBTC',
-    'XMRBTC',
-    'XRPBTC',
-    'ZECBTC'
+    'BTCUSDT',
+    'ETHUSDT'
     ]

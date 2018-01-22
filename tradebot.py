@@ -41,20 +41,20 @@ def main():
     balance_list = signed_request('https://www.binance.com/api/v3/account?', '')['balances']
     for symbol in symbol_lists:
         for value in balance_list:
-            if value['asset'] == cut_btc(symbol):
+            if value['asset'] == cut_usdt(symbol):
                 new_balance_list.append(value)
             else:
                 pass
 
     # BNB close price
-    bnb_close_price = float(get_latest_candle('BNBBTC', interval, endTime)[0][4])
+    bnb_close_price = float(get_latest_candle('BNBUSDT', interval, endTime)[0][4])
 
     # BNB balance
     bnb_balance = float(get_free_balance('BNB'))
 
     # BNB auto-buy logic
     for symbol_info in exchange_info:
-        if symbol_info['symbol'] == 'BNBBTC':
+        if symbol_info['symbol'] == 'BNBUSDT':
             print(symbol_info)
             bnb_tickSize = float(symbol_info['filters'][0]['tickSize'])
             print(bnb_tickSize)
@@ -73,16 +73,16 @@ def main():
                 # print(bnb_price)
                 if bnb_price * bnb_quantity > bnb_minNotional:
                     print('[1]')
-                    print(buy_limit('BNBBTC', bnb_quantity, bnb_price))
+                    print(buy_limit('BNBUSDT', bnb_quantity, bnb_price))
                 # elif bnb_price * bnb_quantity < bnb_minNotional and bnb_price > bnb_minNotional:
                 #     print('[2]')
-                #     print(buy_limit('BNBBTC', quantity_in_btc / quantity_in_btc, bnb_price))
+                #     print(buy_limit('BNBUSDT', quantity_in_btc / quantity_in_btc, bnb_price))
                 else:
                     bnb_quantity = bnb_minNotional / bnb_price + 1
                     bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
                     print(bnb_quantity)
                     print('[3]')
-                    print(buy_limit('BNBBTC', bnb_quantity, bnb_price))
+                    print(buy_limit('BNBUSDT', bnb_quantity, bnb_price))
             else:
                 print('No need to buy more BNB, yet')
                 pass
@@ -96,14 +96,14 @@ def main():
     for symbol in symbol_lists:
         print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
-        # create volume list
-        volume_list = []
-        temp_list = historical_candle[symbol][:-6:-1] # 순서는 거꾸로지만 리스트는 맞다.. 현재 봉 포함한 5개봉의 BTC볼륨 데이터
-        for j in temp_list:
-            volume_list.append(float(j[7]))
+        # # create volume list
+        # volume_list = []
+        # temp_list = historical_candle[symbol][:-6:-1] # 순서는 거꾸로지만 리스트는 맞다.. 현재 봉 포함한 5개봉의 BTC볼륨 데이터
+        # for j in temp_list:
+        #     volume_list.append(float(j[7]))
 
-        # find max_volume
-        max_volume = max(volume_list)
+        # # find max_volume
+        # max_volume = max(volume_list)
 
         # create list of close value
         close_value = []
@@ -136,7 +136,7 @@ def main():
 
                     # middle_band 상향 돌파 BUY
                     if float(historical_candle[symbol][-2][4]) < middle_band and float(historical_candle[symbol][-1][4]) > middle_band:
-                        name = cut_btc(symbol)
+                        name = cut_usdt(symbol)
                         for value in new_balance_list:
                             if value['asset'] == name:
                                 current_balance = float(value['free']) + float(value['locked'])
@@ -151,22 +151,22 @@ def main():
                                     pass
                             else:
                                 pass
-                    # 신고 거래량 & 양봉 & middle_band과 lower_band 사이에 있으면 BUY
-                    elif max_volume == float(historical_candle[symbol][-1][7]) and float(historical_candle[symbol][-1][1]) < float(historical_candle[symbol][-1][4]) and float(historical_candle[symbol][-1][4]) < middle_band and float(historical_candle[symbol][-1][4]) > lower_band:
-                        name = cut_btc(symbol)
-                        for value in new_balance_list:
-                            if value['asset'] == name:
-                                current_balance = float(value['free']) + float(value['locked'])
-                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5:
-                                    price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-                                    quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
-                                    print(buy_limit(symbol, quantity, price))
-                                    print(symbol + ': buy_limit done!')
-                                    continue
-                                else:
-                                    pass
-                            else:
-                                pass
+                    # # 신고 거래량 & 양봉 & middle_band과 lower_band 사이에 있으면 BUY
+                    # elif max_volume == float(historical_candle[symbol][-1][7]) and float(historical_candle[symbol][-1][1]) < float(historical_candle[symbol][-1][4]) and float(historical_candle[symbol][-1][4]) < middle_band and float(historical_candle[symbol][-1][4]) > lower_band:
+                    #     name = cut_usdt(symbol)
+                    #     for value in new_balance_list:
+                    #         if value['asset'] == name:
+                    #             current_balance = float(value['free']) + float(value['locked'])
+                    #             if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5:
+                    #                 price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
+                    #                 quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
+                    #                 print(buy_limit(symbol, quantity, price))
+                    #                 print(symbol + ': buy_limit done!')
+                    #                 continue
+                    #             else:
+                    #                 pass
+                    #         else:
+                    #             pass
                     # upper_band 하향 돌파 SELL
                     elif float(historical_candle[symbol][-2][4]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
                         print('Price to sell for ' + symbol)
@@ -175,24 +175,24 @@ def main():
                         print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': sell_limit done!')
                         continue
-                    # middle_band 하향 돌파 SELL
-                    elif float(historical_candle[symbol][-2][4]) > middle_band and float(historical_candle[symbol][-1][4]) < middle_band:
+                    # middle_band 보다 아래 SELL
+                    elif float(historical_candle[symbol][-1][4]) < middle_band:
                         print('Price to sell for ' + symbol)
                         price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
                         print(sell_limit_all(symbol, price, stepSize))
                         print(str(middle_band) + ' ' + historical_candle[symbol][-1][4])
                         print(symbol + ': sell_limit done!')
                         continue
-                    # lower_band 보다 아래 있으면 SELL
-                    elif float(historical_candle[symbol][-1][4]) < lower_band:
-                        print('Price to sell for ' + symbol)
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
-                        print(sell_limit_all(symbol, price, stepSize))
-                        print(str(lower_band) + ' ' + historical_candle[symbol][-1][4])
-                        print(symbol + ': sell_limit done!')
-                        continue
-                    else:
-                        pass
+                    # # lower_band 보다 아래 SELL
+                    # elif float(historical_candle[symbol][-1][4]) < lower_band:
+                    #     print('Price to sell for ' + symbol)
+                    #     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
+                    #     print(sell_limit_all(symbol, price, stepSize))
+                    #     print(str(lower_band) + ' ' + historical_candle[symbol][-1][4])
+                    #     print(symbol + ': sell_limit done!')
+                    #     continue
+                    # else:
+                    #     pass
 
                 else:
                     cancel_order(symbol, open_orders[0]['orderId'])
