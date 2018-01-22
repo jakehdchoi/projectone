@@ -14,10 +14,9 @@ from binance_api import *
 
 ### todo
 # test 구현
-# 코드 최적화 작업, api call을 최대한 적게 구현
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
-# 어떤 기준으로 symbol_lists를 만들고 업데이트 할지 고민
 # sell_limit_all -> sell_limit으로 변경한 뒤, 현재 balance를 입력하는 로직으로 변경
+# balance.py 최적화 
 
 
 def main():
