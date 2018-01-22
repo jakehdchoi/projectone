@@ -27,7 +27,7 @@ def main():
 
     global endTime, startTime
     endTime = int(timestamp()) - int(interval_num)
-    # endTime = int(1516369447000) - int(interval_num) # xlm을 왜 안 사는거야 (수정완료)
+    # endTime = int(1516613889000) - int(interval_num)
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     exchange_info = get_exchange_info()['symbols']
@@ -45,6 +45,8 @@ def main():
                 new_balance_list.append(value)
             else:
                 pass
+    print(new_balance_list)
+
 
     # BNB close price
     bnb_close_price = float(get_latest_candle('BNBUSDT', interval, endTime)[0][4])
@@ -101,7 +103,7 @@ def main():
         # temp_list = historical_candle[symbol][:-6:-1] # 순서는 거꾸로지만 리스트는 맞다.. 현재 봉 포함한 5개봉의 BTC볼륨 데이터
         # for j in temp_list:
         #     volume_list.append(float(j[7]))
-
+        #
         # # find max_volume
         # max_volume = max(volume_list)
 
@@ -121,13 +123,17 @@ def main():
         print(symbol + ' ' + historical_candle[symbol][-2][4] + ' ' + str(middle_band) + ' ' + historical_candle[symbol][-1][4])
 
         for symbol_info in exchange_info:
+
             if symbol_info['symbol'] == symbol:
+                print(symbol_info)
                 tickSize = symbol_info['filters'][0]['tickSize'] # price_filter, minPrice
                 stepSize = symbol_info['filters'][1]['stepSize'] # lot_size, minQty
 
                 open_orders = get_open_orders(symbol)
+                print(open_orders)
 
                 if open_orders is None or len(open_orders) == 0:
+                    print('since no open order')
                     # 봇을 재부팅 할 때, 하필 30분봉이 middle_band를 넘어서는 코인이 있다면 거래가 중복될 것이다
                     # 일단은 봇을 29분에 끄고 31분에 켜는 것을 원칙으로 한다
 
@@ -137,17 +143,22 @@ def main():
                     # middle_band 상향 돌파 BUY
                     if float(historical_candle[symbol][-2][4]) < middle_band and float(historical_candle[symbol][-1][4]) > middle_band:
                         name = cut_usdt(symbol)
+                        print(name)
                         for value in new_balance_list:
                             if value['asset'] == name:
                                 current_balance = float(value['free']) + float(value['locked'])
-                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5:
+                                if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                                     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
+                                    print(price)
                                     quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
+                                    print(quantity)
+                                    print(symbol)
                                     print(buy_limit(symbol, quantity, price))
                                     print(historical_candle[symbol][-2][4] + ' ' + str(middle_band) + ' ' + historical_candle[symbol][-1][4])
                                     print(symbol + ': buy_limit done!')
                                     continue
                                 else:
+                                    print('already has ' + symbol)
                                     pass
                             else:
                                 pass
@@ -157,7 +168,7 @@ def main():
                     #     for value in new_balance_list:
                     #         if value['asset'] == name:
                     #             current_balance = float(value['free']) + float(value['locked'])
-                    #             if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * 0.5:
+                    #             if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                     #                 price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                     #                 quantity = apply_lot_size(get_quantity_to_buy(middle_band), stepSize)
                     #                 print(buy_limit(symbol, quantity, price))
