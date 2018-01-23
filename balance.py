@@ -30,33 +30,33 @@ def main():
     #     print(get_total_balance(symbol))
 
     new_balance_list = []
-    try:
-        url = 'https://www.binance.com/api/v3/account?'
-        query = ''
-        balance_list = signed_request(url, query)['balances']
-        for value in balance_list:
-            if float(value['free']) > 0 or float(value['locked']) > 0:
-                new_balance_list.append(value)
-            else:
-                continue
-    except:
-        print('new balance list error')
+    url = 'https://www.binance.com/api/v3/account?'
+    query = ''
+    balance_list = signed_request(url, query)['balances']
+    for value in balance_list:
+        if float(value['free']) > 0 or float(value['locked']) > 0:
+            new_balance_list.append(value)
+        else:
+            continue
 
     for i in new_balance_list:
         print(i)
 
 
     prices_list = []
-    try:
-        prices_list = simple_request('https://www.binance.com/api/v1/ticker/allPrices')
-    except:
-        print('prices list error')
+    prices_list = simple_request('https://www.binance.com/api/v1/ticker/allPrices')
+
+    # print(prices_list)
 
 
     Estimated_BTC_Value = 0
     for value in new_balance_list:
         if value['asset'] == 'BTC':
-            Estimated_BTC_Value = float(value['locked']) + float(value['free'])
+            Estimated_BTC_Value += float(value['locked']) + float(value['free'])
+        elif value['asset'] == 'USDT':
+            for item in prices_list:
+                if item['symbol'] == 'BTCUSDT':
+                    Estimated_BTC_Value += (float(value['locked']) + float(value['free'])) / float(item['price'])
         else:
             symbol = value['asset'] + 'BTC'
             for item in prices_list:
