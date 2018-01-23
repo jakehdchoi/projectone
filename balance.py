@@ -11,10 +11,6 @@ import symbol_lists
 from binance_api import *
 
 
-### todo
-# crontab에서 동작하는지 확인
-
-
 def main():
     print('Starting binancebot...')
     # time.sleep(10)
@@ -79,7 +75,6 @@ def main():
         f.close()
 
     print(time.strftime('end: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
-
 
 
 

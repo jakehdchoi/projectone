@@ -17,7 +17,8 @@ from binance_api import *
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # sell_limit_all -> sell_limit으로 변경한 뒤, 현재 balance를 입력하는 로직으로 변경
 # signed_recursive_request 만들기
-# balance.py 최적화
+# balance.py 최적화는 했는데, new_balance_list에서 recursive_sign 만들기
+# 이전 캔들의 bollinger를 계산해야 할까? 이전 캔들을 현재 볼린저 값으로 비교하는게 미스가 생길 가능성이 있음 (미약하지만..)
 
 
 def main():
