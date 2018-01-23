@@ -188,7 +188,15 @@ def main():
                     #                 pass
                     #         else:
                     #             pass
-                    # upper_band 하향 돌파 SELL
+                    # upper_band 하향 돌파 SELL (high and close)
+                    elif float(historical_candle[symbol][-2][2]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
+                        print('Price to sell for ' + symbol)
+                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
+                        print(sell_limit_all(symbol, price, stepSize))
+                        print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
+                        print(symbol + ': sell_limit done!')
+                        continue
+                    # upper_band 하향 돌파 SELL (close and close)
                     elif float(historical_candle[symbol][-2][4]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
                         print('Price to sell for ' + symbol)
                         price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
