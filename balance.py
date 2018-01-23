@@ -57,6 +57,8 @@ def main():
             for item in prices_list:
                 if item['symbol'] == 'BTCUSDT':
                     Estimated_BTC_Value += (float(value['locked']) + float(value['free'])) / float(item['price'])
+                else:
+                    continue
         else:
             symbol = value['asset'] + 'BTC'
             for item in prices_list:
