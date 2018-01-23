@@ -32,7 +32,7 @@ def main():
     new_balance_list = []
     url = 'https://www.binance.com/api/v3/account?'
     query = ''
-    balance_list = signed_request(url, query)['balances']
+    balance_list = signed_recursive_request(url, query)['balances']
     for value in balance_list:
         if float(value['free']) > 0 or float(value['locked']) > 0:
             new_balance_list.append(value)
@@ -44,9 +44,7 @@ def main():
 
 
     prices_list = []
-    prices_list = simple_request('https://www.binance.com/api/v1/ticker/allPrices')
-
-    # print(prices_list)
+    prices_list = recursive_request('https://www.binance.com/api/v1/ticker/allPrices')
 
 
     Estimated_BTC_Value = 0

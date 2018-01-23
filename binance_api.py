@@ -255,6 +255,18 @@ def signed_request_again(url, query, type='get'):
         print('Binance error in public request: signed_request')
         return 'error'
 
+def signed_recursive_request(url, query):
+    try:
+        signature = hmac.new((api_secret).encode('utf-8'), query.encode('utf-8'), hashlib.sha256).hexdigest()
+        headers = {'X-MBX-APIKEY': api_key}
+
+        r = recursive_request(url + query + '&signature=' + signature, headers=headers)
+        return r.json()
+
+    except:
+        print('Binance error in public request: signed_request')
+        return 'error'
+
 def simple_request(url):
     r = requests.get(url)
     if r.status_code == 200:
@@ -266,6 +278,13 @@ def simple_request_again(url):
     time.sleep(0.5)
     r = requests.get(url)
     return r.json()
+
+def recursive_request(url):
+    r = requests.get(url)
+    if r.status_code == 200:
+        return r.json()
+    else:
+        return recursive_request(url)
 
 def format_float(f):
     return "%.8f" % f
