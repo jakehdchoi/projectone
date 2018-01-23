@@ -147,7 +147,7 @@ def get_free_balance(symbol):
     try:
         url = 'https://www.binance.com/api/v3/account?'
         query = ''
-        name = cut_btc(symbol)
+        name = cut_usdt(symbol)
         balance_list = signed_request(url, query)['balances']
         for value in balance_list:
             if value['asset'] == name:
@@ -180,6 +180,9 @@ def sell_limit_all(symbol, price, stepSize):
 
 def get_quantity_to_buy(price):
     return quantity_in_btc / price
+
+def get_usdt_quantity_to_buy(target_price_in_usdt, btc_price_in_usdt):
+    return quantity_in_btc * btc_price_in_usdt / target_price_in_usdt
 
 def buy_limit(symbol, quantity, price):
     try:
