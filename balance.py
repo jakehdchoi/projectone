@@ -32,7 +32,7 @@ def main():
     new_balance_list = []
     url = 'https://www.binance.com/api/v3/account?'
     query = ''
-    balance_list = signed_recursive_request(url, query)['balances']
+    balance_list = signed_request(url, query)['balances']
     for value in balance_list:
         if float(value['free']) > 0 or float(value['locked']) > 0:
             new_balance_list.append(value)
