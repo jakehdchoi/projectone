@@ -165,8 +165,9 @@ def get_open_orders(symbol):
         print('Binance error in private request: get_open_orders for ' + symbol)
         return 'error'
 
-def get_simulation_data(symbol, interval, startTime, endTime):
+def get_simulation_data(symbol, interval, interval_num, startTime):
     try:
+        endTime = startTime + int(interval_num * 500)
         return simple_request('https://www.binance.com/api/v1/klines?symbol=' + symbol + '&interval=' + interval + '&startTime=' + str(startTime) + '&endTime=' + str(endTime))
     except:
         print('Binance error in public request: klines for ' + symbol)
