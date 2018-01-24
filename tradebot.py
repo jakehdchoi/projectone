@@ -19,7 +19,7 @@ from binance_api import *
 # signed_recursive_request 만들기
 # balance.py 최적화는 했는데, new_balance_list에서 recursive_sign 만들기
 # 이전 캔들의 bollinger를 계산해야 할까? 이전 캔들을 현재 볼린저 값으로 비교하는게 미스가 생길 가능성이 있음 (미약하지만..)
-
+# 
 
 def main():
     print('Starting binancebot...')
