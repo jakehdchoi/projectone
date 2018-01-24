@@ -86,6 +86,10 @@ def check_latest_candle_update(symbol, interval, endTime):
 def calculate_start_time(endTime):
     return endTime - (interval_num * (period + 10)) # 여유있게 10개 정도 더 받아온 다음에 자르기
 
+def calculate_simulation_start_time(simulation_endTime, simulation_period):
+    return simulation_endTime - simulation_period # 여유있게 10개 정도 더 받아온 다음에 자르기
+
+
 def get_historical_data(symbol, interval, startTime, endTime):
     try:
         historical_data = simple_request('https://www.binance.com/api/v1/klines?symbol=' + symbol + '&interval=' + interval + '&startTime=' + str(startTime) + '&endTime=' + str(endTime))
@@ -109,6 +113,14 @@ def get_historical_data(symbol, interval, startTime, endTime):
         #     "17928899.62484339" // [11] Can be ignored
         #   ], ... []
         # ]
+
+def get_simulation_data(symbol, interval, startTime, endTime):
+    try:
+        return simple_request('https://www.binance.com/api/v1/klines?symbol=' + symbol + '&interval=' + interval + '&startTime=' + str(startTime) + '&endTime=' + str(endTime))
+    except:
+        print('Binance error in public request: klines for ' + symbol)
+        return 'error'
+
 
 def calculate_sma(symbol, interval, startTime, endTime, period):
     try:
