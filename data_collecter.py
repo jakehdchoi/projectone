@@ -46,6 +46,9 @@ def main():
     print(simulation_candle_full_list['BTCUSDT'])
 
 
+
+
+
     with open('BTCUSDT_simulation' + '_' + interval + '_candle.data','r') as mydata:
         a_list = json.load(mydata)
 
