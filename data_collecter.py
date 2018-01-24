@@ -43,21 +43,39 @@ def main():
     simulation_candle_full_list = {}
     for symbol in symbol_lists:
         simulation_candle_full_list[symbol] = get_simulation_data(symbol, interval, simulation_startTime, simulation_endTime)
-    print(simulation_candle_full_list['BTCUSDT'])
+    # print(simulation_candle_full_list['BTCUSDT'])
+    # print(simulation_candle_full_list['ETHUSDT'])
+
+
+    try:
+        f = open('BTCUSDT_simulation' + '_' + interval + '_candle.data','r+')
+        data = json.load(f)
+        # print(data)
+
+        data.extend(simulation_candle_full_list['BTCUSDT'])
+        print(data)
+
+        filtered_data = list(unique_by_first_n(11, data))
+        print('filtered_data')
+        print(filtered_data)
+
+    except FileNotFoundError:
+        f = open('BTCUSDT_simulation' + '_' + interval + '_candle.data','w')
+        json.dump(simulation_candle_full_list['BTCUSDT'], f)
+    finally:
+        f.close()
 
 
 
-
-
-    with open('BTCUSDT_simulation' + '_' + interval + '_candle.data','r') as mydata:
-        a_list = json.load(mydata)
-
-    a_list.append(simulation_candle_full_list['BTCUSDT'])
-    with open('BTCUSDT_simulation' + '_' + interval + '_candle.data','w') as mysavedata:
-        json.dump(a_list, mysavedata)
-
-
-    print(a_list)
+    # with open('BTCUSDT_simulation' + '_' + interval + '_candle.data','r') as mydata:
+    #     a_list = json.load(mydata)
+    #
+    # a_list.append(simulation_candle_full_list['BTCUSDT'])
+    # with open('BTCUSDT_simulation' + '_' + interval + '_candle.data','w') as mysavedata:
+    #     json.dump(a_list, mysavedata)
+    #
+    #
+    # print(a_list)
 
 
 

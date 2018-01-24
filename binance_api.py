@@ -289,3 +289,11 @@ def timestamp():
     except:
         print('Binance error in public request: timestamp')
         return 'error'
+
+def unique_by_first_n(n, coll):
+    seen = set()
+    for item in coll:
+        compare = tuple(item[:n])    # Keep only the first `n` elements in the set
+        if compare not in seen:
+            seen.add(compare)
+            yield item
