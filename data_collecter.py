@@ -49,40 +49,41 @@ def main():
 
     # simulation_candle_full_list = {}
     for symbol in symbol_lists:
+        print('')
         print(symbol)
         try: # update data
-            f = open(symbol + '_simulation' + '_' + interval + '_candle.data','r')
-            data = json.load(f)
+            print('try:')
+            with open(symbol + '_simulation' + '_' + interval + '_candle.data','r') as f:
+                data = json.load(f)
+            # f.close()
             # print(data)
             print(len(data))
-            f.close()
 
-            if data[-1][0] > simulation_endTime:
-                pass
-            else: # update
+            while True:
                 simulation_startTime = int(data[-1][0]) + int(interval_num)
-                while True:
-                    data.extend(get_simulation_data(symbol, interval, interval_num, simulation_startTime))
-                    if data is None or len(data) == 0:
-                        break
-                    elif data[-1][0] < simulation_startTime:
-                        break
-                    else:
-                        simulation_startTime += int(interval_num * 500)
+                new_data = []
+                new_data.extend(get_simulation_data(symbol, interval, interval_num, simulation_startTime))
+                print(new_data)
 
-                if data is None or len(data) == 0:
+                if new_data is None or len(new_data) == 0:
                     print('Error: Failed to update ' + symbol + ' data')
-                    pass
+                    break
+                elif len(new_data) == 1:
+                    print(symbol + ' data is up-to-date')
+                    break
                 else:
+                    data.extend(new_data)
                     filtered_data = list(unique_by_first_n(11, data))
                     # print('filtered_data')
                     # print(filtered_data)
                     filtered_data.pop()
                     f = open(symbol + '_simulation' + '_' + interval + '_candle.data','w')
                     json.dump(filtered_data, f)
+                    print(symbol + ' data is updated')
                     print(len(filtered_data))
 
         except FileNotFoundError: # create new data
+            print('FileNotFoundError:')
             data = []
             while True:
                 data.extend(get_simulation_data(symbol, interval, interval_num, simulation_startTime))
@@ -94,14 +95,20 @@ def main():
                     else:
                         simulation_startTime += int(interval_num * 500)
                 except IndexError:
+                    print('IndexError:')
                     # time.sleep(1)
                     # data.extend(get_simulation_data(symbol, interval, interval_num, simulation_startTime))
                     pass
 
             if data is None or len(data) == 0:
                 print('Error: Failed to update ' + symbol + ' data')
-                pass
+                break
+            elif len(data) == 1:
+                print('len(data) is: ' + str(len(data)))
+                print(data)
+                break
             else:
+                print(len(data))
                 filtered_data = list(unique_by_first_n(11, data))
                 # print('filtered_data')
                 # print(filtered_data)
