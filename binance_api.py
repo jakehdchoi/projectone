@@ -112,7 +112,12 @@ def get_free_balance(symbol):
     try:
         url = 'https://www.binance.com/api/v3/account?'
         query = ''
-        name = cut_usdt(symbol)
+        if symbol.find('USDT') >= 3:
+            name = cut_usdt(symbol)
+        elif symbol.find('BTC') >= 3:
+            name = cut_btc(symbol)
+        else:
+            pass
         balance_list = signed_request(url, query)['balances']
         for value in balance_list:
             if value['asset'] == name:
@@ -183,7 +188,12 @@ def get_total_balance(symbol):
     try:
         url = 'https://www.binance.com/api/v3/account?'
         query = ''
-        name = cut_btc(symbol)
+        if symbol.find('USDT') >= 3:
+            name = cut_usdt(symbol)
+        elif symbol.find('BTC') >= 3:
+            name = cut_btc(symbol)
+        else:
+            pass
         balance_list = signed_request(url, query)['balances']
         for value in balance_list:
             if value['asset'] == name:
@@ -196,10 +206,14 @@ def get_total_balance(symbol):
 
 def recursive_request(url):
     r = requests.get(url)
-    if r.status_code == 200:
-        return r.json()
-    else:
-        return recursive_request(url)
+    count = 0
+    while count < 20:
+        if r.status_code == 200:
+            return r.json()
+        else:
+            time.sleep(0.5)
+            r = requests.get(url)
+            count += 1
 
 def sell_limit(symbol, quantity, price):
     try:

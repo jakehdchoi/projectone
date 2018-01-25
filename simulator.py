@@ -1,5 +1,5 @@
 
-import time
+import time, datetime
 import requests
 # import hashlib
 # import hmac
@@ -11,43 +11,46 @@ import symbol_lists
 
 from binance_api import *
 
-# 비트와 이더 시작일: 2017-8-17
-simulation_period_list = {
-    'day': 86400000,
-    'week': 604800000,
-    'month': 2592000000
-}
-simulation_period = simulation_period_list['month']
+# # 비트와 이더 시작일: 2017-8-17
+# simulation_period_list = {
+#     'day': 86400000,
+#     'week': 604800000,
+#     'month': 2592000000
+# }
+# simulation_period = simulation_period_list['month']
 
 initial_amount_in_btc = 10
 trade_amount_in_btc = 4
-
-
-
-
 
 
 ### todo
 
 
 
+
+
 def main():
     print('Starting binancebot simulator...')
     print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
+    print(
+        datetime.datetime.fromtimestamp(
+            int("1284101485")
+        ).strftime('%Y-%m-%d %H:%M:%S')
+    )
 
-    print(simulation_period)
+    # print(simulation_period)
 
 
     global initial_amount_in_btc
-    global simulation_startTime, simulation_endTime
+    # global simulation_startTime, simulation_endTime
     # simulation_endTime = int(timestamp()) - int(interval_num)
-    simulation_endTime = int(1516697115000) - int(interval_num)
-    simulation_startTime = calculate_simulation_start_time(simulation_endTime, simulation_period)
-
-    simulation_candle_full_list = {}
-    for symbol in symbol_lists:
-        simulation_candle_full_list[symbol] = get_simulation_data(symbol, interval, simulation_startTime, simulation_endTime)
-    print(len(simulation_candle_full_list['BTCUSDT']))
+    # simulation_endTime = int(1516697115000) - int(interval_num)
+    # simulation_startTime = calculate_simulation_start_time(simulation_endTime, simulation_period)
+    #
+    # simulation_candle_full_list = {}
+    # for symbol in symbol_lists:
+    #     simulation_candle_full_list[symbol] = get_simulation_data(symbol, interval, simulation_startTime, simulation_endTime)
+    # print(len(simulation_candle_full_list['BTCUSDT']))
 
 
     global startTime, endTime
@@ -55,9 +58,9 @@ def main():
     # endTime = int(1516697115000) - int(interval_num)
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
-    historical_candle = {}
-    for symbol in symbol_lists:
-        historical_candle[symbol] = get_historical_data(symbol, interval, startTime, endTime)
+    # historical_candle = {}
+    # for symbol in symbol_lists:
+    #     historical_candle[symbol] = get_historical_data(symbol, interval, startTime, endTime)
     # print('historical_candle')
     # print(historical_candle)
 
@@ -75,9 +78,9 @@ def main():
 
 
     # BTC price
-    btc_price_in_usdt = float(historical_candle['BTCUSDT'][-1][4])
-    print('btc_price_in_usdt')
-    print(btc_price_in_usdt)
+    # btc_price_in_usdt = float(historical_candle['BTCUSDT'][-1][4])
+    # print('btc_price_in_usdt')
+    # print(btc_price_in_usdt)
 
 
 
