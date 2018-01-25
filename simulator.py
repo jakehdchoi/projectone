@@ -54,8 +54,8 @@ def main():
 
 
     global startTime, endTime
-    endTime = int(timestamp()) - int(interval_num)
-    # endTime = int(1516697115000) - int(interval_num)
+    # endTime = int(timestamp()) - int(interval_num)
+    endTime = int(1516697115000) - int(interval_num) # 데이터에서 추출하기
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     # historical_candle = {}
@@ -67,7 +67,7 @@ def main():
     # create balance_list
     new_balance_list = {}
     for symbol in symbol_lists:
-        symbol = cut_usdt(symbol)
+        symbol = cut_symbol(symbol)
         if symbol == 'BTC':
             new_balance_list[symbol] = initial_amount_in_btc
         else:

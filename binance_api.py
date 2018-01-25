@@ -90,6 +90,14 @@ def check_latest_candle_update(symbol, interval, endTime):
 def cut_btc(symbol):
     return symbol.replace('BTC','')
 
+def cut_symbol(symbol):
+    if symbol.find('USDT') >= 3:
+        return symbol.replace('USDT','')
+    elif symbol.find('BTC') >= 3:
+        return symbol.replace('BTC','')
+    else:
+        return False
+
 def cut_usdt(symbol):
     return symbol.replace('USDT','')
 
