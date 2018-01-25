@@ -47,7 +47,7 @@ def main():
     simulation_startTime = 1502942400000 # startTime for BTCUSDT and ETHUSDT
     print(simulation_startTime)
 
-    simulation_candle_full_list = {}
+    # simulation_candle_full_list = {}
     for symbol in symbol_lists:
         print(symbol)
         try: # update data
@@ -63,18 +63,24 @@ def main():
                 simulation_startTime = int(data[-1][0]) + int(interval_num)
                 while True:
                     data.extend(get_simulation_data(symbol, interval, interval_num, simulation_startTime))
-                    if data[-1][0] < simulation_startTime:
+                    if data is None or len(data) == 0:
+                        break
+                    elif data[-1][0] < simulation_startTime:
                         break
                     else:
                         simulation_startTime += int(interval_num * 500)
 
-                filtered_data = list(unique_by_first_n(11, data))
-                # print('filtered_data')
-                # print(filtered_data)
-                filtered_data.pop()
-                f = open(symbol + '_simulation' + '_' + interval + '_candle.data','w')
-                json.dump(filtered_data, f)
-                print(len(filtered_data))
+                if data is None or len(data) == 0:
+                    print('Error: Failed to update ' + symbol + ' data')
+                    pass
+                else:
+                    filtered_data = list(unique_by_first_n(11, data))
+                    # print('filtered_data')
+                    # print(filtered_data)
+                    filtered_data.pop()
+                    f = open(symbol + '_simulation' + '_' + interval + '_candle.data','w')
+                    json.dump(filtered_data, f)
+                    print(len(filtered_data))
 
         except FileNotFoundError: # create new data
             data = []
