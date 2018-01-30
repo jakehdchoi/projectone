@@ -53,7 +53,7 @@ def main():
         print(symbol)
         try: # update data
             print('try:')
-            with open(symbol + '_simulation' + '_' + interval + '_candle.data','r') as f:
+            with open(symbol + '_' + str(period) + 'p_' + interval + '_candle.data', 'r') as f:
                 data = json.load(f)
             # f.close()
             # print(data)
@@ -77,7 +77,7 @@ def main():
                     # print('filtered_data')
                     # print(filtered_data)
                     filtered_data.pop()
-                    f = open(symbol + '_simulation' + '_' + interval + '_candle.data','w')
+                    f = open(symbol + '_' + str(period) + 'p_' + interval + '_candle.data', 'w')
                     json.dump(filtered_data, f)
                     print(symbol + ' data is updated')
                     print(len(filtered_data))
@@ -113,7 +113,7 @@ def main():
                 # print('filtered_data')
                 # print(filtered_data)
                 filtered_data.pop()
-                f = open(symbol + '_simulation' + '_' + interval + '_candle.data','w')
+                f = open(symbol + '_' + str(period) + 'p_' + interval + '_candle.data', 'w')
                 json.dump(filtered_data, f)
                 print(len(filtered_data))
         finally:

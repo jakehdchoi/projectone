@@ -106,3 +106,4 @@ config.py
 # no need to upload data file
 *.csv
 *.data
+*.txt
