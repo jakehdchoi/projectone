@@ -21,12 +21,12 @@ from binance_api import *
 
 def main():
     print('Starting binancebot...')
-    # time.sleep(10)
+    time.sleep(10)
     print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
-    # endTime = int(timestamp()) - int(interval_num)
-    endTime = int(1517312298000) - int(interval_num) # 5분봉에서 비트를 사야함
+    endTime = int(timestamp()) - int(interval_num)
+    # endTime = int(1517312298000) - int(interval_num) # 5분봉에서 비트를 사야함
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     exchange_info = get_exchange_info()['symbols']
