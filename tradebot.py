@@ -16,10 +16,8 @@ from binance_api import *
 # test 구현
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # sell_limit_all -> sell_limit으로 변경한 뒤, 현재 balance를 입력하는 로직으로 변경
-# signed_recursive_request 만들기
-# balance.py 최적화는 했는데, new_balance_list에서 recursive_sign 만들기
-# 이전 캔들의 bollinger를 계산해야 할까? 이전 캔들을 현재 볼린저 값으로 비교하는게 미스가 생길 가능성이 있음 (미약하지만..)
-# 
+#
+
 
 def main():
     print('Starting binancebot...')
@@ -57,49 +55,49 @@ def main():
     print('btc_price_in_usdt')
     print(btc_price_in_usdt)
 
-    # BNB close price
-    bnb_close_price = float(get_latest_candle('BNBUSDT', interval, endTime)[0][4])
-
-    # BNB balance
-    bnb_balance = float(get_free_balance('BNB'))
-
-    # BNB auto-buy logic
-    for symbol_info in exchange_info:
-        if symbol_info['symbol'] == 'BNBUSDT':
-            print(symbol_info)
-            bnb_tickSize = float(symbol_info['filters'][0]['tickSize'])
-            print(bnb_tickSize)
-            bnb_stepSize = float(symbol_info['filters'][1]['stepSize'])
-            print(bnb_stepSize)
-            bnb_minNotional = float(symbol_info['filters'][2]['minNotional'])
-            print(bnb_minNotional)
-
-            if bnb_balance * bnb_close_price < quantity_in_btc * len(symbol_lists) * 0.001:
-                bnb_quantity = quantity_in_btc * len(symbol_lists) * 0.0005 / bnb_close_price
-                bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
-                print(bnb_quantity)
-                bnb_price = bnb_close_price * 2
-                print(bnb_price)
-                # bnb_price = apply_tick_size(bnb_price, bnb_tickSize)
-                # print(bnb_price)
-                if bnb_price * bnb_quantity > bnb_minNotional:
-                    print('[1]')
-                    print(buy_limit('BNBUSDT', bnb_quantity, bnb_price))
-                # elif bnb_price * bnb_quantity < bnb_minNotional and bnb_price > bnb_minNotional:
-                #     print('[2]')
-                #     print(buy_limit('BNBUSDT', quantity_in_btc / quantity_in_btc, bnb_price))
-                else:
-                    bnb_quantity = bnb_minNotional / bnb_price + 1
-                    bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
-                    print(bnb_quantity)
-                    print('[3]')
-                    print(buy_limit('BNBUSDT', bnb_quantity, bnb_price))
-            else:
-                print('No need to buy more BNB, yet')
-                pass
-
-        else:
-            pass
+    # # BNB close price
+    # bnb_close_price = float(get_latest_candle('BNBUSDT', interval, endTime)[0][4])
+    #
+    # # BNB balance
+    # bnb_balance = float(get_free_balance('BNB'))
+    #
+    # # BNB auto-buy logic
+    # for symbol_info in exchange_info:
+    #     if symbol_info['symbol'] == 'BNBUSDT':
+    #         print(symbol_info)
+    #         bnb_tickSize = float(symbol_info['filters'][0]['tickSize'])
+    #         print(bnb_tickSize)
+    #         bnb_stepSize = float(symbol_info['filters'][1]['stepSize'])
+    #         print(bnb_stepSize)
+    #         bnb_minNotional = float(symbol_info['filters'][2]['minNotional'])
+    #         print(bnb_minNotional)
+    #
+    #         if bnb_balance * bnb_close_price < quantity_in_btc * len(symbol_lists) * 0.001:
+    #             bnb_quantity = quantity_in_btc * len(symbol_lists) * 0.0005 / bnb_close_price
+    #             bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
+    #             print(bnb_quantity)
+    #             bnb_price = bnb_close_price * 2
+    #             print(bnb_price)
+    #             # bnb_price = apply_tick_size(bnb_price, bnb_tickSize)
+    #             # print(bnb_price)
+    #             if bnb_price * bnb_quantity > bnb_minNotional:
+    #                 print('[1]')
+    #                 print(buy_limit('BNBUSDT', bnb_quantity, bnb_price))
+    #             # elif bnb_price * bnb_quantity < bnb_minNotional and bnb_price > bnb_minNotional:
+    #             #     print('[2]')
+    #             #     print(buy_limit('BNBUSDT', quantity_in_btc / quantity_in_btc, bnb_price))
+    #             else:
+    #                 bnb_quantity = bnb_minNotional / bnb_price + 1
+    #                 bnb_quantity = apply_lot_size(bnb_quantity, bnb_stepSize)
+    #                 print(bnb_quantity)
+    #                 print('[3]')
+    #                 print(buy_limit('BNBUSDT', bnb_quantity, bnb_price))
+    #         else:
+    #             print('No need to buy more BNB, yet')
+    #             pass
+    #
+    #     else:
+    #         pass
 
 
 
@@ -122,10 +120,10 @@ def main():
             close_value.append(float(i[4]))
 
         # bollinger band
-        std_value = numpy.std(close_value)
         middle_band = numpy.average(close_value)
-        upper_band = middle_band + (k * std_value)
-        lower_band = middle_band - (k * std_value)
+        # std_value = numpy.std(close_value)
+        # upper_band = middle_band + (k * std_value)
+        # lower_band = middle_band - (k * std_value)
         # print(upper_band)
         # print(lower_band)
 
@@ -161,7 +159,7 @@ def main():
                                 if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                                     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                                     print(price)
-                                    quantity = apply_lot_size(get_usdt_quantity_to_buy(middle_band, btc_price_in_usdt), stepSize)
+                                    quantity = apply_lot_size(get_usdt_quantity_to_buy(symbol, float(historical_candle[symbol][-1][4]), btc_price_in_usdt), stepSize)
                                     print(quantity)
                                     print(symbol)
                                     print(buy_limit(symbol, quantity, price))
@@ -181,7 +179,7 @@ def main():
                     #             current_balance = float(value['free']) + float(value['locked'])
                     #             if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                     #                 price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-                    #                 quantity = apply_lot_size(get_usdt_quantity_to_buy(middle_band, btc_price_in_usdt), stepSize)
+                    #                 quantity = apply_lot_size(get_usdt_quantity_to_buy(symbol, middle_band, btc_price_in_usdt), stepSize)
                     #                 print(buy_limit(symbol, quantity, price))
                     #                 print(symbol + ': buy_limit done!')
                     #                 continue
@@ -189,22 +187,22 @@ def main():
                     #                 pass
                     #         else:
                     #             pass
-                    # upper_band 하향 돌파 SELL (high and close)
-                    elif float(historical_candle[symbol][-2][2]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
-                        print('Price to sell for ' + symbol)
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
-                        print(sell_limit_all(symbol, price, stepSize))
-                        print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
-                        print(symbol + ': sell_limit done!')
-                        continue
-                    # upper_band 하향 돌파 SELL (close and close)
-                    elif float(historical_candle[symbol][-2][4]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
-                        print('Price to sell for ' + symbol)
-                        price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
-                        print(sell_limit_all(symbol, price, stepSize))
-                        print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
-                        print(symbol + ': sell_limit done!')
-                        continue
+                    # # upper_band 하향 돌파 SELL (high and close)
+                    # elif float(historical_candle[symbol][-2][2]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
+                    #     print('Price to sell for ' + symbol)
+                    #     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
+                    #     print(sell_limit_all(symbol, price, stepSize))
+                    #     print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
+                    #     print(symbol + ': sell_limit done!')
+                    #     continue
+                    # # upper_band 하향 돌파 SELL (close and close)
+                    # elif float(historical_candle[symbol][-2][4]) > upper_band and float(historical_candle[symbol][-1][4]) < upper_band:
+                    #     print('Price to sell for ' + symbol)
+                    #     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 - percent_on_price), tickSize)
+                    #     print(sell_limit_all(symbol, price, stepSize))
+                    #     print(str(upper_band) + ' ' + historical_candle[symbol][-1][4])
+                    #     print(symbol + ': sell_limit done!')
+                    #     continue
                     # middle_band 보다 아래 SELL
                     elif float(historical_candle[symbol][-1][4]) < middle_band:
                         print('Price to sell for ' + symbol)
@@ -222,8 +220,8 @@ def main():
                     #     print(str(lower_band) + ' ' + historical_candle[symbol][-1][4])
                     #     print(symbol + ': sell_limit done!')
                     #     continue
-                    # else:
-                    #     pass
+                    else:
+                        pass
 
                 else:
                     cancel_order(symbol, open_orders[0]['orderId'])

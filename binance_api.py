@@ -189,8 +189,8 @@ def get_simulation_data(symbol, interval, interval_num, startTime):
 def get_quantity_to_buy(price):
     return quantity_in_btc / price
 
-def get_usdt_quantity_to_buy(target_price_in_usdt, btc_price_in_usdt):
-    return quantity_in_btc * btc_price_in_usdt / target_price_in_usdt
+def get_usdt_quantity_to_buy(symbol, target_price_in_usdt, btc_price_in_usdt):
+    return get_free_balance(symbol) * btc_price_in_usdt / target_price_in_usdt
 
 def get_total_balance(symbol):
     try:

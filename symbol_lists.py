@@ -1,4 +1,4 @@
 symbol_lists = [
-    'BTCUSDT',
-    'ETHUSDT'
+    'BTCUSDT'
+    # 'ETHUSDT'
     ]

@@ -28,7 +28,7 @@ new_balance_list = {}
 
 
 ### todo
-
+# 파일에 트레이딩 횟수 같이 저장
 
 
 
