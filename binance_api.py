@@ -204,7 +204,7 @@ def get_quantity_to_buy(price):
     return quantity_in_btc / price
 
 def get_usdt_quantity_to_buy(target_price_in_usdt):
-    return float(get_free_usdt_balance()) / target_price_in_usdt
+    return float(get_free_usdt_balance()) / target_price_in_usdt * (1 - percent_on_price)
 
 def get_total_balance(symbol):
     try:

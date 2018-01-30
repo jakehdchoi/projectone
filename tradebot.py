@@ -26,7 +26,7 @@ def main():
 
     global endTime, startTime
     endTime = int(timestamp()) - int(interval_num)
-    # endTime = int(1517312298000) - int(interval_num) # 5분봉에서 비트를 사야함
+    # endTime = int(1517313666000) - int(interval_num) # 5분봉에서 비트를 사야함
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     exchange_info = get_exchange_info()['symbols']
@@ -159,7 +159,8 @@ def main():
                                 if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                                     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                                     print(price)
-                                    quantity = apply_lot_size(get_usdt_quantity_to_buy(float(historical_candle[symbol][-1][4])), stepSize)
+                                    print(stepSize)
+                                    quantity = apply_lot_size(get_usdt_quantity_to_buy(float(historical_candle[symbol][-1][4])), stepSize) - float(stepSize)
                                     print(quantity)
                                     print(symbol)
                                     print(buy_limit(symbol, quantity, price))
