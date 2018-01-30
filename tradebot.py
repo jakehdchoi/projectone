@@ -16,17 +16,17 @@ from binance_api import *
 # test 구현
 # get_open_orders()를 반복할 필요 없음. open order 전체를 가지고 오는 함수 구현 필요.
 # sell_limit_all -> sell_limit으로 변경한 뒤, 현재 balance를 입력하는 로직으로 변경
-#
+## 트레이드 이후에 파일에 기록하는 로직을 만들까?
 
 
 def main():
     print('Starting binancebot...')
-    time.sleep(10)
+    # time.sleep(10)
     print(time.strftime('start: ' + '%Y-%m-%d %H:%M:%S', time.localtime()))
 
     global endTime, startTime
-    endTime = int(timestamp()) - int(interval_num)
-    # endTime = int(1516697115000) - int(interval_num) # 5분봉에서 비트를 사야함
+    # endTime = int(timestamp()) - int(interval_num)
+    endTime = int(1517312298000) - int(interval_num) # 5분봉에서 비트를 사야함
     startTime = calculate_start_time(endTime) # n-time candle * period+@
 
     exchange_info = get_exchange_info()['symbols']
@@ -159,7 +159,7 @@ def main():
                                 if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                                     price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
                                     print(price)
-                                    quantity = apply_lot_size(get_usdt_quantity_to_buy(symbol, float(historical_candle[symbol][-1][4]), btc_price_in_usdt), stepSize)
+                                    quantity = apply_lot_size(get_usdt_quantity_to_buy(float(historical_candle[symbol][-1][4])), stepSize)
                                     print(quantity)
                                     print(symbol)
                                     print(buy_limit(symbol, quantity, price))
@@ -179,7 +179,7 @@ def main():
                     #             current_balance = float(value['free']) + float(value['locked'])
                     #             if float(historical_candle[symbol][-1][4]) * current_balance < quantity_in_btc * float(historical_candle['BTCUSDT'][-1][4]) * 0.5:
                     #                 price = apply_tick_size(float(historical_candle[symbol][-1][4]) * (1 + percent_on_price), tickSize)
-                    #                 quantity = apply_lot_size(get_usdt_quantity_to_buy(symbol, middle_band, btc_price_in_usdt), stepSize)
+                    #                 quantity = apply_lot_size(get_usdt_quantity_to_buy(middle_band, btc_price_in_usdt), stepSize)
                     #                 print(buy_limit(symbol, quantity, price))
                     #                 print(symbol + ': buy_limit done!')
                     #                 continue

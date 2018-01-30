@@ -136,6 +136,20 @@ def get_free_balance(symbol):
         print('Binance error in public request: get_free_balance for ' + symbol)
         return 'error'
 
+def get_free_usdt_balance():
+    try:
+        url = 'https://www.binance.com/api/v3/account?'
+        query = ''
+        balance_list = signed_request(url, query)['balances']
+        for value in balance_list:
+            if value['asset'] == 'USDT':
+                return value['free']
+            else:
+                pass
+    except:
+        print('Binance error in public request: get_free_usdt_balance')
+        return 'error'
+
 def get_historical_data(symbol, interval, startTime, endTime):
     try:
         historical_data = simple_request('https://www.binance.com/api/v1/klines?symbol=' + symbol + '&interval=' + interval + '&startTime=' + str(startTime) + '&endTime=' + str(endTime))
@@ -189,8 +203,8 @@ def get_simulation_data(symbol, interval, interval_num, startTime):
 def get_quantity_to_buy(price):
     return quantity_in_btc / price
 
-def get_usdt_quantity_to_buy(symbol, target_price_in_usdt, btc_price_in_usdt):
-    return get_free_balance(symbol) * btc_price_in_usdt / target_price_in_usdt
+def get_usdt_quantity_to_buy(target_price_in_usdt):
+    return float(get_free_usdt_balance()) / target_price_in_usdt
 
 def get_total_balance(symbol):
     try:
